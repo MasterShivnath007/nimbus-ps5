@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <fstream>
-#include <sstream>
+
+#include "data/text.hpp"
 
 #include "gfx/math.hpp"
 
@@ -20,10 +20,6 @@ std::string lower_ascii(const std::string &text) {
 }
 
 namespace {
-std::string clean_field(std::string value) {
-    while (!value.empty() && (value.back() == '\r' || value.back() == '\n')) value.pop_back();
-    return value;
-}
 }  // namespace
 
 bool Places::load(const std::string &asset_dir) {
@@ -64,18 +60,15 @@ bool Places::load(const std::string &asset_dir) {
         {"Antarctic Peninsula", "Antarctica", -64.0000, -60.0000, "Blue ice, black water and immense silence."},
     };
 
-    std::ifstream city_file(asset_dir + "/cities.tsv");
-    if (!city_file) {
+    std::string city_text;
+    if (!read_text_file(asset_dir + "/cities.tsv", city_text)) {
         std::fprintf(stderr, "[places] missing cities.tsv\n");
         return false;
     }
-    std::string line;
-    std::getline(city_file, line);  // header
-    while (std::getline(city_file, line)) {
-        std::vector<std::string> fields;
-        std::stringstream stream(line);
-        std::string field;
-        while (std::getline(stream, field, '\t')) fields.push_back(clean_field(field));
+    const auto city_lines = split_lines(city_text);
+    for (size_t line_index = 1; line_index < city_lines.size(); ++line_index) {
+        if (city_lines[line_index].empty()) continue;
+        const auto fields = split_tabs(city_lines[line_index]);
         if (fields.size() < 8) continue;
         City city;
         city.name = fields[0];
@@ -93,14 +86,12 @@ bool Places::load(const std::string &asset_dir) {
         return a.name < b.name;
     });
 
-    std::ifstream country_file(asset_dir + "/countries.tsv");
-    if (country_file) {
-        std::getline(country_file, line);
-        while (std::getline(country_file, line)) {
-            std::vector<std::string> fields;
-            std::stringstream stream(line);
-            std::string field;
-            while (std::getline(stream, field, '\t')) fields.push_back(clean_field(field));
+    std::string country_text;
+    if (read_text_file(asset_dir + "/countries.tsv", country_text)) {
+        const auto country_lines = split_lines(country_text);
+        for (size_t line_index = 1; line_index < country_lines.size(); ++line_index) {
+            if (country_lines[line_index].empty()) continue;
+            const auto fields = split_tabs(country_lines[line_index]);
             if (fields.size() < 6) continue;
             Country country;
             country.name = fields[0];

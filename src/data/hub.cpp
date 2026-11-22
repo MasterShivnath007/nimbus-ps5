@@ -5,13 +5,12 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <fstream>
-#include <sstream>
 #include <unordered_map>
 
 #include "SGP4.h"
 #include "app/timeutil.hpp"
 #include "data/json.hpp"
+#include "data/text.hpp"
 #include "gfx/math.hpp"
 #include "platform/platform.hpp"
 
@@ -108,27 +107,23 @@ double DataHub::weather_interval(double base) const {
 
 void DataHub::load_satellites(const std::string &asset_dir) {
     satellites_.clear();
-    std::ifstream tle_file(asset_dir + "/satellites.tle");
-    if (!tle_file) {
+    std::string tle_text;
+    if (!read_text_file(asset_dir + "/satellites.tle", tle_text)) {
         std::fprintf(stderr, "[hub] no satellites.tle\n");
         return;
     }
-    std::string line;
     std::vector<std::string> lines;
-    while (std::getline(tle_file, line)) {
+    for (auto &line : split_lines(tle_text)) {
         line = trim(line);
-        if (!line.empty()) lines.push_back(line);
+        if (!line.empty()) lines.push_back(std::move(line));
     }
     std::unordered_map<int, std::pair<std::string, std::string>> satcat;
-    std::ifstream cat_file(asset_dir + "/satcat.tsv");
-    if (cat_file) {
-        std::string header;
-        std::getline(cat_file, header);
-        while (std::getline(cat_file, line)) {
-            std::stringstream stream(line);
-            std::string field;
-            std::vector<std::string> fields;
-            while (std::getline(stream, field, '\t')) fields.push_back(field);
+    std::string cat_text;
+    if (read_text_file(asset_dir + "/satcat.tsv", cat_text)) {
+        const auto cat_lines = split_lines(cat_text);
+        for (size_t line_index = 1; line_index < cat_lines.size(); ++line_index) {
+            if (cat_lines[line_index].empty()) continue;
+            const auto fields = split_tabs(cat_lines[line_index]);
             if (fields.size() < 11) continue;
             const int norad = std::atoi(fields[0].c_str());
             satcat[norad] = {fields[2], fields[3]};  // owner, launch

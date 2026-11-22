@@ -2,10 +2,9 @@
 
 #include <cstdio>
 #include <cstring>
-#include <fstream>
-#include <sstream>
 
 #include "data/json.hpp"
+#include "data/text.hpp"
 
 namespace nimbus {
 
@@ -14,13 +13,11 @@ std::string Settings::path(const std::string &data_dir) const {
 }
 
 bool Settings::load(const std::string &data_dir) {
-    std::ifstream file(path(data_dir));
-    if (!file) return false;
-    std::stringstream buffer;
-    buffer << file.rdbuf();
+    std::string text;
+    if (!read_text_file(path(data_dir), text)) return false;
     Json json;
     std::string error;
-    if (!parse_json(buffer.str(), json, error)) return false;
+    if (!parse_json(text, json, error)) return false;
     home_name = json.get("home_name").string_or(home_name);
     home_country = json.get("home_country").string_or(home_country);
     home_lat = json.get("home_lat").as_number(home_lat);
@@ -52,50 +49,53 @@ bool Settings::load(const std::string &data_dir) {
 }
 
 bool Settings::save(const std::string &data_dir) const {
-    std::ostringstream out;
-    out << "{\n";
-    out << "  \"version\": " << version << ",\n";
-    out << "  \"home_name\": \"" << json_escape(home_name) << "\",\n";
-    out << "  \"home_country\": \"" << json_escape(home_country) << "\",\n";
-    out << "  \"home_lat\": " << home_lat << ",\n";
-    out << "  \"home_lon\": " << home_lon << ",\n";
-    out << "  \"home_utc_offset\": " << home_utc_offset << ",\n";
-    out << "  \"celsius\": " << (celsius ? "true" : "false") << ",\n";
-    out << "  \"wind_kmh\": " << (wind_kmh ? "true" : "false") << ",\n";
-    out << "  \"distance_km\": " << (distance_km ? "true" : "false") << ",\n";
-    out << "  \"clock_24h\": " << (clock_24h ? "true" : "false") << ",\n";
-    out << "  \"map_style\": " << map_style << ",\n";
-    out << "  \"weather_layer\": " << weather_layer << ",\n";
-    out << "  \"wind_layer\": " << (wind_layer ? "true" : "false") << ",\n";
-    out << "  \"borders\": " << (borders ? "true" : "false") << ",\n";
-    out << "  \"clouds\": " << (clouds ? "true" : "false") << ",\n";
-    out << "  \"bloom\": " << (bloom ? "true" : "false") << ",\n";
-    out << "  \"auto_rotate\": " << (auto_rotate ? "true" : "false") << ",\n";
-    out << "  \"labels\": " << (labels ? "true" : "false") << ",\n";
-    out << "  \"show_orbits\": " << (show_orbits ? "true" : "false") << ",\n";
-    out << "  \"ambient_minutes\": " << ambient_minutes << ",\n";
-    out << "  \"quality\": " << quality << ",\n";
-    out << "  \"render_scale\": " << render_scale << ",\n";
-    out << "  \"data_saver\": " << data_saver << ",\n";
-    out << "  \"first_run\": " << (first_run ? "true" : "false") << ",\n";
-    out << "  \"live_time\": " << (live_time ? "true" : "false") << ",\n";
-    out << "  \"time_offset_minutes\": " << time_offset_minutes << ",\n";
-    out << "  \"show_fps\": " << (show_fps ? "true" : "false") << ",\n";
-    out << "  \"boot_animation\": " << (boot_animation ? "true" : "false") << "\n";
-    out << "}\n";
+    std::string out;
+    out.reserve(1400);
+    out += "{\n";
+    char buffer[128];
+    std::snprintf(buffer, sizeof(buffer), "  \"version\": %d,\n", version);
+    out += buffer;
+    out += "  \"home_name\": \""; out += json_escape(home_name); out += "\",\n";
+    out += "  \"home_country\": \""; out += json_escape(home_country); out += "\",\n";
+    std::snprintf(buffer, sizeof(buffer), "  \"home_lat\": %.6f,\n", home_lat); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"home_lon\": %.6f,\n", home_lon); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"home_utc_offset\": %d,\n", home_utc_offset); out += buffer;
+    out += "  \"celsius\": "; out += celsius ? "true" : "false"; out += ",\n";
+    out += "  \"wind_kmh\": "; out += wind_kmh ? "true" : "false"; out += ",\n";
+    out += "  \"distance_km\": "; out += distance_km ? "true" : "false"; out += ",\n";
+    out += "  \"clock_24h\": "; out += clock_24h ? "true" : "false"; out += ",\n";
+    std::snprintf(buffer, sizeof(buffer), "  \"map_style\": %d,\n", map_style); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"weather_layer\": %d,\n", weather_layer); out += buffer;
+    out += "  \"wind_layer\": "; out += wind_layer ? "true" : "false"; out += ",\n";
+    out += "  \"borders\": "; out += borders ? "true" : "false"; out += ",\n";
+    out += "  \"clouds\": "; out += clouds ? "true" : "false"; out += ",\n";
+    out += "  \"bloom\": "; out += bloom ? "true" : "false"; out += ",\n";
+    out += "  \"auto_rotate\": "; out += auto_rotate ? "true" : "false"; out += ",\n";
+    out += "  \"labels\": "; out += labels ? "true" : "false"; out += ",\n";
+    out += "  \"show_orbits\": "; out += show_orbits ? "true" : "false"; out += ",\n";
+    std::snprintf(buffer, sizeof(buffer), "  \"ambient_minutes\": %d,\n", ambient_minutes); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"quality\": %d,\n", quality); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"render_scale\": %.6f,\n", render_scale); out += buffer;
+    std::snprintf(buffer, sizeof(buffer), "  \"data_saver\": %d,\n", data_saver); out += buffer;
+    out += "  \"first_run\": "; out += first_run ? "true" : "false"; out += ",\n";
+    out += "  \"live_time\": "; out += live_time ? "true" : "false"; out += ",\n";
+    std::snprintf(buffer, sizeof(buffer), "  \"time_offset_minutes\": %d,\n", time_offset_minutes); out += buffer;
+    out += "  \"show_fps\": "; out += show_fps ? "true" : "false"; out += ",\n";
+    out += "  \"boot_animation\": "; out += boot_animation ? "true" : "false"; out += "\n";
+    out += "}\n";
     const std::string final_path = path(data_dir);
     const std::string temporary = final_path + ".tmp";
     std::FILE *file = std::fopen(temporary.c_str(), "wb");
     if (!file) return false;
-    const std::string text = out.str();
-    const size_t written = std::fwrite(text.data(), 1, text.size(), file);
+    const size_t written = std::fwrite(out.data(), 1, out.size(), file);
     std::fclose(file);
-    if (written != text.size()) {
+    if (written != out.size()) {
         std::remove(temporary.c_str());
         return false;
     }
     std::remove(final_path.c_str());
     return std::rename(temporary.c_str(), final_path.c_str()) == 0;
+
 }
 
 }  // namespace nimbus

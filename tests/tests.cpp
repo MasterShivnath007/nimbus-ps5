@@ -4,7 +4,10 @@
 
 #include "app/astro.hpp"
 #include "app/camera.hpp"
+#include "app/settings.hpp"
 #include "app/timeutil.hpp"
+#include "data/places.hpp"
+#include <sys/stat.h>
 #include "data/json.hpp"
 #include "data/weather.hpp"
 
@@ -61,6 +64,26 @@ int main() {
     std::vector<uint8_t> pixels;
     grid.build_texture(pixels, 72, 36);
     CHECK(pixels.size() == 72u * 36u * 4u);
+
+    nimbus::Places places;
+    CHECK(places.load("assets") || places.load("../assets"));
+    CHECK(places.cities().size() > 6000);
+    CHECK(!places.search("New York", 5).empty());
+
+    const std::string settings_dir = "/tmp/nimbus_tests_settings";
+    ::mkdir(settings_dir.c_str(), 0755);
+    nimbus::Settings settings;
+    settings.home_name = "Test City";
+    settings.celsius = false;
+    settings.weather_layer = 2;
+    settings.map_style = 2;
+    CHECK(settings.save(settings_dir));
+    nimbus::Settings reloaded;
+    CHECK(reloaded.load(settings_dir));
+    CHECK(reloaded.home_name == "Test City");
+    CHECK(!reloaded.celsius);
+    CHECK(reloaded.weather_layer == 2);
+    CHECK(reloaded.map_style == 2);
 
     std::printf("nimbus tests passed\n");
     return 0;
