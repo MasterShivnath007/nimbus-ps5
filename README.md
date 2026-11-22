@@ -183,7 +183,9 @@ Highlights of the implementation:
 - Esri basemap usage is suitable for a free non-commercial community app with
   attribution; re-check Esri's terms if you redistribute or sell the app.
 - PS5 display mode is 1080p/60 in this release (the renderer supports higher
-  internal resolution through the quality setting).
+  internal resolution through the quality setting). The native title folder
+  builds successfully with the pinned toolchain; it has not yet been launched
+  on retail hardware.
 - Surface views are intentionally north-up; the orbital view carries the sky,
   stars and celestial bodies.
 - TLE snapshots are refreshed with releases. Live TLE refresh is on the roadmap.

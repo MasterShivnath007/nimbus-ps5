@@ -114,13 +114,20 @@ worker threads; tile decoding happens off the render thread. TLS uses the
 console's certificate store (the public HTTPS callback is installed because some
 homebrew environments have an incomplete trust store). No credentials are sent.
 
-## Scope / verification
+## Verification status
 
-The desktop app and its renderer are exercised by the host test suite and the
-screenshots in `docs/screenshots`. The PS5 build path mirrors ps5-opengl's
-hardware-tested native app packaging, but **the exact Nimbus build must be
-verified on the target firmware and homebrew loader before submitting it**.
-Check the eboot launches, the DualSense is detected, tiles load, weather refreshes
-and the title closes cleanly. The prebuilt ps5-opengl SDK is documented upstream
-as host-checked, not console-validated, so this hardware pass is not optional
-before a public listing.
+- **Desktop:** `nimbus_tests` covers the math, JSON, time conversion, weather
+  grid and city/settings persistence; the screenshots in `docs/screenshots`
+  are rendered by the desktop build.
+- **Native build:** completed on 2026-11-23 on x86-64 Ubuntu 26.04 with Clang
+  18.1.8, LLD 18, boilerplate commit
+  `470695e0c557f99ff2df0e36e4df713c5e636526` and ps5-opengl SDK 1.0.2.
+  The generated `eboot.bin` is 23,449,389 bytes, a signed FSELF with 12
+  segments and a valid integrity digest. The title artifact
+  `PPSA42716-01.000.000.zip` is 17 MB; its SHA-256 is
+  `97159d16b6a5e8546b6b1ac0a4f1339002117909c4c3f114fd8d669dd66fb8cc`.
+- **Console:** not yet launched on a PS5. The remaining hardware pass is to
+  confirm the title starts, the DualSense is detected, tiles and weather load,
+  the network fetches succeed, and the system closes the title cleanly. The
+  prebuilt ps5-opengl SDK is documented upstream as host-checked, not
+  console-validated, so this pass is mandatory before a public listing.
