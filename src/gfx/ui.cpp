@@ -266,6 +266,7 @@ void Ui::rounded_rect_gradient(const Rect &r, float radius, Color top, Color bot
 }
 
 void Ui::glow(const Rect &r, float radius, float blur, Color color) {
+    (void)radius;
     const float s = scale_;
     add_quad({r.x * s, r.y * s, r.w * s, r.h * s}, 0, 0, r.w * s * 0.5f, r.h * s * 0.5f,
              blur * s, color, color, 0, 0, 1, 1, 3.0f, white_.id);
