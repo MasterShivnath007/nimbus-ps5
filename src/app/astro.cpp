@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include "app/timeutil.hpp"
+
 namespace nimbus {
 
 double julian_date(double unix_time) {
@@ -128,27 +130,23 @@ void sun_rise_set(const SkyState &sky, double lat, double lon, double &rise_unix
 }
 
 std::string format_utc(double unix_time) {
-    const time_t seconds = static_cast<time_t>(unix_time);
-    struct tm tm_utc;
-    gmtime_r(&seconds, &tm_utc);
+    const UtcTime utc = utc_from_unix(static_cast<int64_t>(unix_time));
     char buffer[32];
-    std::snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", tm_utc.tm_hour, tm_utc.tm_min,
-                  tm_utc.tm_sec);
+    std::snprintf(buffer, sizeof(buffer), "%02u:%02u:%02u", utc.hour, utc.minute, utc.second);
     return buffer;
 }
 
 std::string format_local(double unix_time, int utc_offset_seconds, bool use_24h) {
-    const time_t seconds = static_cast<time_t>(unix_time + utc_offset_seconds);
-    struct tm tm_local;
-    gmtime_r(&seconds, &tm_local);
+    const UtcTime local =
+        utc_from_unix(static_cast<int64_t>(unix_time) + utc_offset_seconds);
     char buffer[32];
     if (use_24h) {
-        std::snprintf(buffer, sizeof(buffer), "%02d:%02d", tm_local.tm_hour, tm_local.tm_min);
+        std::snprintf(buffer, sizeof(buffer), "%02u:%02u", local.hour, local.minute);
     } else {
-        int hour = tm_local.tm_hour % 12;
+        unsigned hour = local.hour % 12;
         if (hour == 0) hour = 12;
-        std::snprintf(buffer, sizeof(buffer), "%d:%02d %s", hour, tm_local.tm_min,
-                      tm_local.tm_hour >= 12 ? "PM" : "AM");
+        std::snprintf(buffer, sizeof(buffer), "%u:%02u %s", hour, local.minute,
+                      local.hour >= 12 ? "PM" : "AM");
     }
     return buffer;
 }

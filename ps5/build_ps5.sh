@@ -101,6 +101,8 @@ for optional in ps5_opengl_display.h ps5_opengl_display_modes.h; do
 done
 cp "$glsrc/native-app/runtime_shims.c" "$app/src/runtime_shims.c"
 cp "$glsrc/native-app/app_heap.c" "$app/src/app_heap.c"
+# ps5-opengl's layout includes the boilerplate's base linker script.
+cp "$app/tooling/native/ps5-pie.ld" "$app/tooling/native/ps5-pie-base.ld"
 cp "$glsrc/native-app/ps5-pie.ld" "$app/tooling/native/ps5-pie.ld"
 cp "$glsrc/native-app/app-symbols.map" "$app/tooling/native/app-symbols.map"
 
@@ -172,7 +174,7 @@ group="$app/vendor/libnimbus_group.a"
 
 cat > "$app/.env" <<'EOF'
 APP_DEFINITIONS = NIMBUS_PS5=1 GL_GLEXT_PROTOTYPES=1
-APP_INCLUDE_PATHS = src:include:third_party/stb:third_party/sgp4
+APP_INCLUDE_PATHS = src include third_party/stb third_party/sgp4
 APP_STATIC_ARCHIVES = vendor/libnimbus_group.a
 EOF
 

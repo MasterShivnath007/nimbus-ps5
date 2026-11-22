@@ -4,6 +4,7 @@
 
 #include "app/astro.hpp"
 #include "app/camera.hpp"
+#include "app/timeutil.hpp"
 #include "data/json.hpp"
 #include "data/weather.hpp"
 
@@ -21,6 +22,12 @@ int main() {
     double lat = 0, lon = 0;
     nimbus::unit_to_latlon(mid, lat, lon);
     CHECK(lon > 44.9 && lon < 45.1);
+
+    CHECK(nimbus::unix_from_utc(2026, 11, 22, 16, 0, 0) == 1795363200LL);
+    const nimbus::UtcTime utc = nimbus::utc_from_unix(1795363200LL);
+    CHECK(utc.year == 2026 && utc.month == 11 && utc.day == 22 && utc.hour == 16);
+    CHECK(nimbus::unix_from_utc(2024, 2, 29, 0, 0, 0) == 1709164800LL);
+    CHECK(nimbus::unix_from_utc(1970, 1, 1, 0, 0, 0) == 0);
 
     nimbus::Json json;
     std::string error;

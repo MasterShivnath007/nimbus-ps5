@@ -8,6 +8,7 @@
 #include <ctime>
 
 #include "app/astro.hpp"
+#include "app/timeutil.hpp"
 #include "data/json.hpp"
 #include "gfx/math.hpp"
 
@@ -20,9 +21,11 @@ double parse_utc(const std::string &text) {
     if (std::sscanf(text.c_str(), "%d-%d-%dT%d:%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday,
                     &tm.tm_hour, &tm.tm_min, &tm.tm_sec) < 3)
         return 0.0;
-    tm.tm_year -= 1900;
-    tm.tm_mon -= 1;
-    return static_cast<double>(timegm(&tm));
+    return static_cast<double>(unix_from_utc(tm.tm_year, static_cast<unsigned>(tm.tm_mon),
+                                             static_cast<unsigned>(tm.tm_mday),
+                                             static_cast<unsigned>(tm.tm_hour),
+                                             static_cast<unsigned>(tm.tm_min),
+                                             static_cast<unsigned>(tm.tm_sec)));
 }
 
 const char *kCuratedCities[] = {

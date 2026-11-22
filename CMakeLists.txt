@@ -50,9 +50,8 @@ target_include_directories(nimbus_core PUBLIC
 set_source_files_properties(
   third_party/sgp4/TLE.c
   third_party/sgp4/SGP4.c
-  PROPERTIES LANGUAGE CXX
+  PROPERTIES COMPILE_OPTIONS "-Wno-unused-variable;-Wno-unused-but-set-variable"
 )
-target_compile_options(nimbus_core PRIVATE -Wno-unused-but-set-variable)
 target_compile_options(nimbus_core PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(nimbus_core PUBLIC PkgConfig::SDL2 OpenGL::GL CURL::libcurl Threads::Threads)
 

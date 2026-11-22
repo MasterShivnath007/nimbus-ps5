@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "SGP4.h"
+#include "app/timeutil.hpp"
 #include "data/json.hpp"
 #include "gfx/math.hpp"
 #include "platform/platform.hpp"
@@ -52,18 +53,17 @@ double parse_iso_local(const std::string &text, int utc_offset_seconds) {
     if (std::sscanf(text.c_str(), "%d-%d-%dT%d:%d", &tm.tm_year, &tm.tm_mon, &tm.tm_mday,
                     &tm.tm_hour, &tm.tm_min) < 5)
         return 0;
-    tm.tm_year -= 1900;
-    tm.tm_mon -= 1;
-    return static_cast<double>(timegm(&tm)) - utc_offset_seconds;
+    return static_cast<double>(unix_from_utc(tm.tm_year, static_cast<unsigned>(tm.tm_mon),
+                                             static_cast<unsigned>(tm.tm_mday),
+                                             static_cast<unsigned>(tm.tm_hour),
+                                             static_cast<unsigned>(tm.tm_min), 0)) -
+           utc_offset_seconds;
 }
 
 std::string format_epoch(double unix_time) {
-    const time_t seconds = static_cast<time_t>(unix_time);
-    std::tm tm_utc;
-    gmtime_r(&seconds, &tm_utc);
+    const UtcTime utc = utc_from_unix(static_cast<int64_t>(unix_time));
     char buffer[32];
-    std::snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", tm_utc.tm_year + 1900,
-                  tm_utc.tm_mon + 1, tm_utc.tm_mday);
+    std::snprintf(buffer, sizeof(buffer), "%04d-%02u-%02u", utc.year, utc.month, utc.day);
     return buffer;
 }
 

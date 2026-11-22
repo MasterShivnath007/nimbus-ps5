@@ -19,6 +19,10 @@ typedef int bool;
 #define TRUE 1
 #define FALSE 0
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * This class implements the elsetrec data type from Vallado's SGP4 code.
  *
@@ -277,5 +281,9 @@ void getgravconst(int whichconst, ElsetRec *rec);
 double gstime(double jdut1);
 
 void jday(int year, int mon, int day, int hr, int minute, double sec, double *jd, double *jdfrac);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
