@@ -223,8 +223,9 @@ void App::draw_location_modal() {
              location_query_.empty() ? "Curated starting points" : "Best matches",
              results.x + results.w, results.y - 20);
     if (location_results_.empty()) {
-        ui_.text(style(ui_.font_medium(), 12, kMuted, 1), "No place matches that search",
-                 results.x, results.y + 30);
+        TextStyle empty_style = style(ui_.font_medium(), 12, kMuted, 1);
+        empty_style.max_width = results.w;
+        ui_.text(empty_style, "No place matches that search", results.x, results.y + 30);
     }
     ui_.push_clip({results.x - 8, results.y, results.w + 16, results.h});
     const int visible = 9;
@@ -421,7 +422,10 @@ void App::draw_help_modal() {
                 } else {
                     draw_prompt(x, y, rows[i].glyph, "");
                 }
-                ui_.text(style(ui_.font_medium(), 11.5f, kText), rows[i].label, x + 32, y + 2);
+                const bool wide_key = std::string(rows[i].glyph) == "touchpad" ||
+                                      std::string(rows[i].glyph) == "options";
+                const float label_x = wide_key ? x + 52 : x + 32;
+                ui_.text(style(ui_.font_medium(), 11.5f, kText), rows[i].label, label_x, y + 2);
                 y += 43;
             }
         };
@@ -430,7 +434,7 @@ void App::draw_help_modal() {
         ui_.rounded_rect({panel.x + 36, panel.y + panel.h - 96, panel.w - 72, 1}, 0.5f,
                          hex(0xFFFFFF, 0.06f));
         ui_.text(style(ui_.font_ui(), 9.5f, kDim),
-                 "Tip: click a city label with the mouse. The right stick tilts the camera once you are below 260 km.",
+                 "Tip: click a city label with the mouse. On the surface the right stick rotates the map heading.",
                  panel.x + 36, panel.y + panel.h - 76);
     } else {
         const char *lines1[] = {

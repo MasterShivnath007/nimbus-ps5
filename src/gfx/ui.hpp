@@ -72,6 +72,7 @@ public:
 
     void rect(const Rect &rect, Color color);
     void rounded_rect(const Rect &rect, float radius, Color color);
+    void gradient_rect(const Rect &rect, Color top, Color bottom);
     void rounded_rect_gradient(const Rect &rect, float radius, Color top, Color bottom);
     void glow(const Rect &rect, float radius, float blur, Color color);
     void line(float x0, float y0, float x1, float y1, float thickness, Color color);

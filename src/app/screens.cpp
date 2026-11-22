@@ -73,8 +73,8 @@ void App::draw_brand(float x, float y, float scale) {
 
 void App::draw_top_bar() {
     const float w = ui_.virtual_width();
-    ui_.rect({0, 0, w, 92}, hex(0x03070C, 0.78f));
-    ui_.rounded_rect_gradient({0, 92, w, 72}, 0, hex(0x03070C, 0.78f), hex(0x03070C, 0.0f));
+    ui_.rect({0, 0, w, 92}, hex(0x03070C, 0.92f));
+    ui_.gradient_rect({0, 92, w, 88}, hex(0x03070C, 0.92f), hex(0x03070C, 0.0f));
     draw_brand(44, 24, 1.0f);
 
     const float tab_w = 152;
@@ -529,8 +529,9 @@ void App::draw_center_reticle() {
     name_style.max_width = pill.w;
     ui_.text(name_style, label, pill.x, pill.y + 6);
     if (!camera_.flying) {
-        ui_.text(style(ui_.font_ui(), 8.5f, kDim, 1), "PRESS CROSS TO FLY HERE", pill.x,
-                 pill.y + 31);
+        TextStyle hint = style(ui_.font_ui(), 9.5f, kMuted, 1);
+        hint.max_width = pill.w;
+        ui_.text(hint, "PRESS CROSS TO FLY HERE", pill.x, pill.y + 31);
     } else {
         const float progress = static_cast<float>(clamp(camera_.fly_t, 0.0, 1.0));
         ui_.rounded_rect({pill.x + 16, pill.y + pill.h + 7, (pill.w - 32) * progress, 2}, 1, kWarm);
@@ -606,7 +607,7 @@ void App::draw_globe_hud() {
     draw_map_style_pill();
     draw_layer_rail();
     draw_weather_card(card);
-    ui_.rounded_rect_gradient({0, h - 154, w, 154}, 0, hex(0x02050A, 0.0f), hex(0x02050A, 0.82f));
+    ui_.gradient_rect({0, h - 160, w, 160}, hex(0x02050A, 0.0f), hex(0x02050A, 0.92f));
     draw_controller_prompts();
     draw_attribution();
     if (modal_ != ModalNone) return;
@@ -635,7 +636,8 @@ void App::draw_controller_prompts() {
 
 void App::draw_prompt(float x, float y, const char *glyph, const std::string &label) {
     const std::string key = glyph;
-    const Color line = hex(0xBFD0DD, 0.86f);
+    const Color line = hex(0xD7E6F1, 0.95f);
+    float label_x = x + 31;
     if (key == "cross" || key == "circle" || key == "square" || key == "triangle") {
         ui_.circle(x + 12, y + 12, 11, hex(0xFFFFFF, 0.10f));
         ui_.ring(x + 12, y + 12, 11, 1.0f, hex(0xFFFFFF, 0.18f));
@@ -659,15 +661,18 @@ void App::draw_prompt(float x, float y, const char *glyph, const std::string &la
         ui_.rounded_rect({x + 7, y + 2, 8, 18}, 3, hex(0xFFFFFF, 0.09f));
         ui_.circle(x + 11, y + 11, 2.2f, line);
     } else {
-        const Rect pill(x, y + 2, 30, 18);
+        const float key_width = (key == "options" || key == "touchpad") ? 46.0f : 30.0f;
+        const Rect pill(x, y + 2, key_width, 18);
         ui_.rounded_rect(pill, 9, hex(0xFFFFFF, 0.09f));
-        ui_.ring(x + 15, y + 11, 9, 0.8f, hex(0xFFFFFF, 0.14f));
+        ui_.ring(x + key_width * 0.5f, y + 11, 9, 0.8f, hex(0xFFFFFF, 0.14f));
         TextStyle key_style = style(ui_.font_semibold(), 8, line, 1);
+        key_style.max_width = pill.w;
         std::string text = key;
         for (auto &c : text) c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
         ui_.text(key_style, text, pill.x, pill.y + 5);
+        label_x = x + key_width + 1.0f;
     }
-    ui_.text(style(ui_.font_medium(), 12, kMuted), label, x + 31, y + 4);
+    ui_.text(style(ui_.font_medium(), 12, hex(0xD9E6EF, 0.95f)), label, label_x, y + 4);
 }
 
 void App::draw_attribution() {
@@ -767,10 +772,12 @@ void App::draw_flights_hud() {
         ui_.rounded_rect({mode.x + 94, mode.y + 3, 90, 26}, 13, hex(0x23313F, 0.95f));
     else
         ui_.rounded_rect({mode.x + 3, mode.y + 3, 90, 26}, 13, hex(0x123B3C, 0.95f));
-    ui_.text(style(ui_.font_semibold(), 10, flight_world_ ? kMuted : kAccent, 1), "LOCAL",
-             mode.x + 3, mode.y + 10);
-    ui_.text(style(ui_.font_semibold(), 10, flight_world_ ? kText : kMuted, 1), "WORLD",
-             mode.x + 94, mode.y + 10);
+    TextStyle mode_style = style(ui_.font_semibold(), 10,
+                                 flight_world_ ? kMuted : kAccent, 1);
+    mode_style.max_width = 90;
+    ui_.text(mode_style, "LOCAL", mode.x + 3, mode.y + 10);
+    mode_style.color = flight_world_ ? kText : kMuted;
+    ui_.text(mode_style, "WORLD", mode.x + 94, mode.y + 10);
     add_hit(mode, [this] {
         flight_world_ = !flight_world_;
         camera_.set_focus(settings_.home_lat, settings_.home_lon, flight_world_ ? 12000000.0 : 2200000.0);
@@ -827,8 +834,10 @@ void App::draw_flights_hud() {
         ui_.text(style(ui_.font_display_bold(), 24, kText), callsign, detail.x + 20, detail.y + 16);
         ui_.rounded_rect({detail.x + detail.w - 116, detail.y + 16, 96, 22}, 11,
                          hex(0x123B3C, 0.8f));
-        ui_.text(style(ui_.font_semibold(), 8.5f, kAccent, 1),
-                 flight_world_ ? "WORLD" : "ADS-B", detail.x + detail.w - 116, detail.y + 23);
+        TextStyle badge = style(ui_.font_semibold(), 8.5f, kAccent, 1);
+        badge.max_width = 96;
+        ui_.text(badge, flight_world_ ? "WORLD" : "ADS-B", detail.x + detail.w - 116,
+                 detail.y + 23);
         const std::string city = aircraft.nearest_city.empty() ? aircraft.country
                                                                 : aircraft.nearest_city + ", " + aircraft.nearest_country;
         ui_.text(style(ui_.font_ui(), 10.5f, kMuted), city, detail.x + 20, detail.y + 48);
@@ -853,7 +862,7 @@ void App::draw_flights_hud() {
                  "ADS-B position reports are not flight plans; routes are inferred.", detail.x + 20,
                  detail.y + detail.h - 24);
     }
-    ui_.rounded_rect_gradient({0, h - 154, w, 154}, 0, hex(0x02050A, 0.0f), hex(0x02050A, 0.82f));
+    ui_.gradient_rect({0, h - 160, w, 160}, hex(0x02050A, 0.0f), hex(0x02050A, 0.92f));
     draw_controller_prompts();
     draw_attribution();
     if (screen_fade_ < 1.0f)
@@ -913,8 +922,9 @@ void App::draw_satellite_detail(const Rect &rect) {
     ui_.text(style(ui_.font_ui(), 10.5f, kMuted),
              sat->country + " · NORAD " + std::to_string(sat->norad), rect.x + 32, rect.y + 58);
     ui_.rounded_rect({rect.x + rect.w - 106, rect.y + 24, 86, 22}, 11, with_alpha(category, 0.15f));
-    ui_.text(style(ui_.font_semibold(), 8, category, 1), sat->category, rect.x + rect.w - 106,
-             rect.y + 31);
+    TextStyle category_style = style(ui_.font_semibold(), 8, category, 1);
+    category_style.max_width = 86;
+    ui_.text(category_style, sat->category, rect.x + rect.w - 106, rect.y + 31);
 
     const char *labels[] = {"ALTITUDE", "VELOCITY", "PERIOD", "INCLINATION", "LAUNCH", "ORBIT"};
     const std::string values[] = {
@@ -1073,7 +1083,7 @@ void App::draw_satellites_hud() {
 void App::draw_ambient() {
     const float w = ui_.virtual_width();
     const float h = ui_.virtual_height();
-    ui_.rounded_rect_gradient({0, 0, w, 170}, 0, hex(0x02050A, 0.55f), hex(0x02050A, 0.0f));
+    ui_.gradient_rect({0, 0, w, 170}, hex(0x02050A, 0.55f), hex(0x02050A, 0.0f));
     TextStyle clock = style(ui_.font_display_bold(), 46, hex(0xF5FBFF, 0.92f), 2);
     clock.max_width = 420;
     ui_.text(clock, current_clock(), w - 44 - 400, 26);

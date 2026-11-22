@@ -228,7 +228,7 @@ void Ui::add_quad(const Rect &r, float local_x, float local_y, float half_w, flo
     if (r.w <= 0 || r.h <= 0) return;
     add_vertex(r.x, r.y, u0, v1, c0, local_x - half_w, local_y - half_h, half_w, half_h, radius,
                mode, texture);
-    add_vertex(r.x + r.w, r.y, u1, v1, c1, local_x + half_w, local_y - half_h, half_w, half_h,
+    add_vertex(r.x + r.w, r.y, u1, v1, c0, local_x + half_w, local_y - half_h, half_w, half_h,
                radius, mode, texture);
     add_vertex(r.x + r.w, r.y + r.h, u1, v0, c1, local_x + half_w, local_y + half_h, half_w,
                half_h, radius, mode, texture);
@@ -236,7 +236,7 @@ void Ui::add_quad(const Rect &r, float local_x, float local_y, float half_w, flo
                mode, texture);
     add_vertex(r.x + r.w, r.y + r.h, u1, v0, c1, local_x + half_w, local_y + half_h, half_w,
                half_h, radius, mode, texture);
-    add_vertex(r.x, r.y + r.h, u0, v0, c0, local_x - half_w, local_y + half_h, half_w, half_h,
+    add_vertex(r.x, r.y + r.h, u0, v0, c1, local_x - half_w, local_y + half_h, half_w, half_h,
                radius, mode, texture);
 }
 
@@ -249,6 +249,14 @@ void Ui::rounded_rect(const Rect &r, float radius, Color color) {
     const float s = scale_;
     add_quad({r.x * s, r.y * s, r.w * s, r.h * s}, 0, 0, r.w * s * 0.5f, r.h * s * 0.5f,
              radius * s, color, color, 0, 0, 1, 1, 2.0f, white_.id);
+}
+
+void Ui::gradient_rect(const Rect &r, Color top, Color bottom) {
+    // A plain quad: mode 0 keeps the interpolated alpha without the SDF edge
+    // coverage that would otherwise leave a seam where two scrims meet.
+    const float s = scale_;
+    add_quad({r.x * s, r.y * s, r.w * s, r.h * s}, 0, 0, 0, 0, 0, top, bottom, 0, 0, 1, 1,
+             0.0f, white_.id);
 }
 
 void Ui::rounded_rect_gradient(const Rect &r, float radius, Color top, Color bottom) {

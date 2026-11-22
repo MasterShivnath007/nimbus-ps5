@@ -230,7 +230,7 @@ bool EarthRenderer::init(const std::string &asset_dir, const std::string &data_d
     // the show, so particles are deliberately sparse and fine.
     std::mt19937 rng(0x51a7b00bu);
     std::uniform_real_distribution<float> random(0.0f, 1.0f);
-    particles_.resize(10000);
+    particles_.resize(7000);
     for (auto &p : particles_) {
         p.lat = std::asin(2.0f * random(rng) - 1.0f) / static_cast<float>(kDeg);
         p.lon = random(rng) * 360.0f - 180.0f;
@@ -684,7 +684,9 @@ void EarthRenderer::draw_wind(const Camera &camera, float dt) {
     update_particles(dt);
     const float offset = static_cast<float>(clamp(camera.height * 0.0011, 4.0, 9000.0));
     const float radius = static_cast<float>(kEarthRadius) + offset;
-    const float tail_seconds = static_cast<float>(clamp(camera.height / 200000.0, 1.0, 60.0));
+    const float tail_seconds = static_cast<float>(clamp(camera.height / 700000.0, 1.0, 12.0));
+    const float altitude_fade =
+        0.42f + 0.58f * (1.0f - static_cast<float>(smoothstep(2.0e6, 10.0e6, camera.height)));
     wind_lines_.begin();
     for (const auto &p : particles_) {
         float u = 0, v = 0;
@@ -702,7 +704,7 @@ void EarthRenderer::draw_wind(const Camera &camera, float dt) {
         if (tail_lon < -180) tail_lon += 360;
         const Vec3 a = latlon_to_unit(tail_lat, tail_lon) * radius;
         const Vec3 b = latlon_to_unit(p.lat, p.lon) * radius;
-        const float alpha = 0.26f + 0.60f * t;
+        const float alpha = (0.12f + 0.40f * t) * altitude_fade;
         const float ca[] = {a.x, a.y, a.z, 0.55f + 0.38f * t, 0.95f, 0.86f, alpha * 0.15f};
         const float cb[] = {b.x, b.y, b.z, 0.65f + 0.30f * t, 1.0f, 0.90f, alpha};
         wind_lines_.add_colored(ca, ca + 3, cb, cb + 3);
