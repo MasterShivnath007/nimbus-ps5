@@ -1,0 +1,14 @@
+{
+  "titleid": "PPSA42716",
+  "name": "Nimbus",
+  "kind": "app",
+  "category": "utilities",
+  "description": "A live 3D Earth for PS5: real-time weather layers, city-level zoom, flights and satellites, piloted with the DualSense.",
+  "license": "GPL-3.0",
+  "author": "MasterShivnath007",
+  "version": null,
+  "source_repo": null,
+  "artifact_url": null,
+  "sha256": null,
+  "icon_url": null
+}

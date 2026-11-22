@@ -1,0 +1,15 @@
+.build/
+build/
+dist/
+out/
+.ps5build/
+.cache/
+.toolchain/
+.venv/
+shots/
+*.o
+*.a
+*.elf
+.DS_Store
+__pycache__/
+*.pyc

@@ -1,0 +1,91 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  desktop:
+    name: Desktop · macOS/Linux
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libsdl2-dev libcurl4-openssl-dev libgl1-mesa-dev xvfb
+      - name: Configure
+        run: cmake -S . -B .build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - name: Build
+        run: cmake --build .build -j"$(nproc)"
+      - name: Unit tests
+        run: ctest --test-dir .build --output-on-failure
+      - name: Render a smoke screenshot (software OpenGL)
+        run: |
+          xvfb-run -a ./.build/nimbus --screenshot nimbus-smoke.png \
+            --width 1920 --height 1080 --offline --modal discover --wait 2 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-smoke
+          path: nimbus-smoke.png
+          if-no-files-found: ignore
+
+  ps5:
+    name: PS5 · native title folder
+    runs-on: ubuntu-24.04
+    needs: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-18 clang++-18 lld-18 make cmake ninja-build \
+            python3 python3-pyelftools pkg-config curl wget unzip zip zlib1g-dev
+      - name: Fetch native app boilerplate (pinned)
+        run: |
+          git clone --filter=blob:none https://github.com/drakmor/ps5-native-app-boilerplate "$RUNNER_TEMP/boilerplate"
+          git -C "$RUNNER_TEMP/boilerplate" checkout 470695e0c557f99ff2df0e36e4df713c5e636526
+          make -C "$RUNNER_TEMP/boilerplate" deps libc
+      - name: Fetch ps5-opengl SDK 1.0.2
+        run: |
+          mkdir -p "$RUNNER_TEMP/gl"
+          curl -L --fail -o "$RUNNER_TEMP/gl/sdk.tar.gz" \
+            https://github.com/darkxex/ps5-opengl/releases/download/v1.0.2/ps5-opengl-sdk-1.0.2.tar.gz
+          tar -xzf "$RUNNER_TEMP/gl/sdk.tar.gz" -C "$RUNNER_TEMP/gl"
+      - name: Build native title
+        env:
+          PS5_NATIVE_APP_TEMPLATE: ${{ runner.temp }}/boilerplate
+          PS5_OPENGL_PREFIX: ${{ runner.temp }}/gl/ps5-opengl-sdk-1.0.2/sdk
+          PS5_CLANG: clang-18
+          PS5_CXX: clang++-18
+        run: bash ps5/build_ps5.sh
+      - name: Show artifact
+        run: ls -lh out && cat out/*.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PPSA42716-ps5
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Attach native title to release
+    if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
+    needs: ps5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: PPSA42716-ps5
+          path: out
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            out/*.zip
+            out/*.sha256
