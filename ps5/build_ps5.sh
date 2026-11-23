@@ -100,6 +100,9 @@ for optional in ps5_opengl_display.h ps5_opengl_display_modes.h; do
     [[ -f "$gl/include/$optional" ]] && cp "$gl/include/$optional" "$app/include/"
 done
 cp "$glsrc/native-app/runtime_shims.c" "$app/src/runtime_shims.c"
+# Folder-installed titles do not have a global /download0; keep the SDK log
+# beside the app data on the writable /data partition.
+sed -i 's#/download0/ps5-opengl.log#/data/ps5-opengl.log#g' "$app/src/runtime_shims.c"
 cp "$glsrc/native-app/app_heap.c" "$app/src/app_heap.c"
 # ps5-opengl's layout includes the boilerplate's base linker script.
 cp "$app/tooling/native/ps5-pie.ld" "$app/tooling/native/ps5-pie-base.ld"

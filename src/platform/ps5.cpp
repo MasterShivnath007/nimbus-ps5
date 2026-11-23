@@ -88,7 +88,7 @@ int g_user = -1;
 uint32_t g_previous_buttons = 0;
 Options g_options;
 std::string g_asset_dir = "/app0/assets";
-std::string g_data_dir = "/download0/nimbus";
+std::string g_data_dir = "/data/nimbus";
 float g_rumble_low = 0, g_rumble_high = 0;
 
 float stick(uint8_t value) {
@@ -133,7 +133,7 @@ bool init(Options &options, std::string &error) {
     g_options = options;
     g_asset_dir = (options.assets_dir.empty() || options.assets_dir == "assets") ? "/app0/assets"
                                                                          : options.assets_dir;
-    g_data_dir = options.data_dir.empty() ? "/download0/nimbus" : options.data_dir;
+    g_data_dir = options.data_dir.empty() ? "/data/nimbus" : options.data_dir;
     make_dirs(g_data_dir);
     make_dirs(g_data_dir + "/cache");
     make_dirs(g_data_dir + "/tiles");

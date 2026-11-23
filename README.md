@@ -79,7 +79,7 @@ In Settings: D-pad navigates, ◂ ▸ adjusts, Cross changes.
 Full credits and license texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 and in the app's **Settings → Data sources** screen.
 
-The app stores only settings and a tile cache on the console (`/download0/nimbus`).
+The app stores only settings and a tile cache on the console (`/data/nimbus`).
 There is no account, analytics or telemetry. Coordinates leave the console only
 when a forecast, flight scan or tile is requested from the services above.
 
