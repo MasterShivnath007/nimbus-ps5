@@ -7,6 +7,15 @@ Nimbus.
 Title ID: **PPSA42716** (checked against the catalog's JSON feed; unused at the
 time of writing). Name: **Nimbus** (no catalog name collision).
 
+## Status — 2026-11-23
+
+- Repository: <https://github.com/MasterShivnath007/nimbus-ps5>
+- Release: <https://github.com/MasterShivnath007/nimbus-ps5/releases/tag/01.000.000>
+- Artifact SHA-256: `97159d16b6a5e8546b6b1ac0a4f1339002117909c4c3f114fd8d669dd66fb8cc`
+- Catalog record: filled in `catalog/PPSA42716.json`; the PR is **not open yet**.
+- Hardware pass: **pending**. Do not open the catalog PR until the title has
+  been launched on a PS5 and the checks in section 5 pass.
+
 ## 1. Publish the repository
 
 Create a public GitHub repository from this source tree, for example:
@@ -75,8 +84,8 @@ shasum -a 256 out/PPSA42716-01.000.000.zip
 
 ## 3. Fill the catalog record
 
-Once the release exists, replace the reservation in
-`catalog/PPSA42716.json` with:
+The record in `catalog/PPSA42716.json` has been filled with the published
+release. It contains:
 
 ```json
 {

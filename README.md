@@ -8,6 +8,8 @@ screensaver.
 **Title ID:** `PPSA42716` · **Version:** `01.000.000` · **Category:** Utilities  
 **License:** GPL-3.0-or-later · **Developer:** MasterShivnath007
 
+[Download the latest release](https://github.com/MasterShivnath007/nimbus-ps5/releases)
+
 ![Nimbus live Earth](docs/screenshots/01-globe.png)
 
 ## What it does
