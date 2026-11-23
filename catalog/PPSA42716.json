@@ -6,9 +6,9 @@
   "description": "A live 3D Earth for PS5: real-time weather layers, city-level zoom, flights and satellites, piloted with the DualSense.",
   "license": "GPL-3.0",
   "author": "MasterShivnath007",
-  "version": "01.000.000",
+  "version": "01.000.001",
   "source_repo": "https://github.com/MasterShivnath007/nimbus-ps5",
-  "artifact_url": "https://github.com/MasterShivnath007/nimbus-ps5/releases/download/01.000.000/PPSA42716-01.000.000.zip",
-  "sha256": "97159d16b6a5e8546b6b1ac0a4f1339002117909c4c3f114fd8d669dd66fb8cc",
-  "icon_url": "https://raw.githubusercontent.com/MasterShivnath007/nimbus-ps5/01.000.000/sce_sys/icon0.png"
+  "artifact_url": "https://github.com/MasterShivnath007/nimbus-ps5/releases/download/01.000.001/PPSA42716-01.000.001.zip",
+  "sha256": "d32879fd86b2d0055bbbef908c404a1bff99b760e134141fd267cae13394c67d",
+  "icon_url": "https://raw.githubusercontent.com/MasterShivnath007/nimbus-ps5/01.000.001/sce_sys/icon0.png"
 }
