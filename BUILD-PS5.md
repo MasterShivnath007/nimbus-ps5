@@ -126,6 +126,8 @@ homebrew environments have an incomplete trust store). No credentials are sent.
   segments and a valid integrity digest. The title artifact
   `PPSA42716-01.000.000.zip` is 17 MB; its SHA-256 is
   `97159d16b6a5e8546b6b1ac0a4f1339002117909c4c3f114fd8d669dd66fb8cc`.
+  The same workflow passed on GitHub Actions for tag `01.000.000`
+  (run `45100543735`), including the native PS5 build job.
 - **Console:** not yet launched on a PS5. The remaining hardware pass is to
   confirm the title starts, the DualSense is detected, tiles and weather load,
   the network fetches succeed, and the system closes the title cleanly. The

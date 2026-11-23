@@ -13,6 +13,8 @@ time of writing). Name: **Nimbus** (no catalog name collision).
 - Release: <https://github.com/MasterShivnath007/nimbus-ps5/releases/tag/01.000.000>
 - Artifact SHA-256: `97159d16b6a5e8546b6b1ac0a4f1339002117909c4c3f114fd8d669dd66fb8cc`
 - Catalog record: filled in `catalog/PPSA42716.json`; the PR is **not open yet**.
+  It passes the catalog's offline `check` and online `verify PPSA42716` (asset
+  digest, contentVersion and icon).
 - Hardware pass: **pending**. Do not open the catalog PR until the title has
   been launched on a PS5 and the checks in section 5 pass.
 
