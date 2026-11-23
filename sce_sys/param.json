@@ -2,31 +2,22 @@
   "ageLevel": {
     "default": 0
   },
-  "amm": {
-    "multimapVaRangeInGib": 512,
-    "pagetableMemorySizeInMib": 256,
-    "vaRangeInGib": 512
-  },
   "applicationCategoryType": 0,
   "applicationDrmType": "free",
-  "attribute": 0,
+  "attribute": 1644167168,
   "attribute2": 0,
-  "attribute3": 0,
+  "attribute3": 1048576,
   "conceptId": "42716",
   "contentBadgeType": 1,
   "contentId": "UP9000-PPSA42716_00-NIMBUSLIVEEARTH1",
-  "contentVersion": "01.000.000",
-  "downloadDataSize": 2048,
+  "contentVersion": "01.000.001",
+  "downloadDataSize": 256,
   "gameIntent": {
     "permittedIntents": [
       {
         "intentType": "launchActivity"
       }
     ]
-  },
-  "kernel": {
-    "cpuPageTableSize": 268435456,
-    "gpuPageTableSize": 268435456
   },
   "localizedParameters": {
     "defaultLanguage": "en-US",
