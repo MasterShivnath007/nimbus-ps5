@@ -29,7 +29,7 @@ work=${WORK:-"$root/.ps5build"}
 title=PPSA42716
 app="$work/$title"
 out="$root/out"
-version=01.000.000
+version=01.000.001
 
 for path in "$template/Makefile" "$template/tooling/prospero-clang18" \
             "$template/runtime/libc.prx" "$sdk/bin/prospero-lld" \
