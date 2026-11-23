@@ -134,7 +134,8 @@ the [ps5-native-app-boilerplate](https://github.com/blackbearreloaded/ps5-native
 
 See [BUILD-PS5.md](BUILD-PS5.md) and [ps5/build_ps5.sh](ps5/build_ps5.sh).
 The included GitHub Actions workflow builds the title folder on Ubuntu and
-attaches `PPSA42716-01.000.000.zip` to a release.
+uploads it as a build artifact. The release zip is attached manually so its
+SHA-256 stays stable for the catalog.
 
 > The PS5 build targets an already-configured homebrew environment. It is not
 > affiliated with, endorsed by, or supported by Sony Interactive Entertainment.

@@ -4,11 +4,12 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-  release:
-    types: [published]
 
+# Release assets are attached manually from the verified `ps5` job artifact.
+# Rebuilding on a release event would change the zip's timestamps and therefore
+# the SHA-256 that the catalog pins.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   desktop:
@@ -72,20 +73,3 @@ jobs:
           name: PPSA42716-ps5
           path: out/*
           if-no-files-found: error
-
-  release:
-    name: Attach native title to release
-    if: github.event_name == 'release'
-    runs-on: ubuntu-24.04
-    needs: ps5
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: PPSA42716-ps5
-          path: out
-      - name: Upload release asset
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            out/*.zip
-            out/*.sha256

@@ -24,7 +24,9 @@ The catalog requires:
 
 ## 2. Publish a release artifact
 
-Build on Linux (or run the `PS5 · native title folder` GitHub Actions job):
+Build on Linux (or download the `PPSA42716-ps5` artifact from the GitHub Actions
+`PS5 · native title folder` job; the workflow deliberately does not attach it to
+a release, so the published hash cannot change under you):
 
 ```bash
 PS5_NATIVE_APP_TEMPLATE=/opt/ps5-native-app-boilerplate \
@@ -46,11 +48,16 @@ PPSA42716-01.000.000.zip
 Publish it as a GitHub release:
 
 ```bash
+shasum -a 256 out/PPSA42716-01.000.000.zip
 gh release create 01.000.000 \
   out/PPSA42716-01.000.000.zip \
+  out/PPSA42716-01.000.000.zip.sha256 \
   --title "Nimbus 01.000.000" \
   --notes "First release. Live Earth, weather layers, flights, satellites."
 ```
+
+Do not rebuild or replace this asset after listing it: the catalog validates the
+exact SHA-256 of the release asset. Publish a new tag for any new build.
 
 Rules used by the catalog:
 
