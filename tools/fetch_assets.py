@@ -569,6 +569,22 @@ def prepare_icon(force: bool) -> None:
         return
     target.parent.mkdir(parents=True, exist_ok=True)
 
+    # The launcher icon is operator-provided art.  Preserve it when present
+    # instead of regenerating the procedural globe.
+    custom = ASSETS / "shell" / "nimbus_icon_source.png"
+    if custom.exists():
+        source = Image.open(custom).convert("RGB")
+        side = min(source.width, source.height)
+        left = (source.width - side) // 2
+        icon = source.crop((left, 0, left + side, side)).resize((512, 512), Image.LANCZOS)
+        pixels = np.asarray(icon, dtype=np.float32) / 255.0
+        pixels = np.clip((pixels - 0.5) * 1.06 + 0.5, 0.0, 1.0)
+        icon = Image.fromarray((pixels * 255.0).astype(np.uint8), "RGB")
+        icon.save(ASSETS / "icon.png", "PNG", optimize=True)
+        icon.save(target, "PNG", optimize=True)
+        log("wrote assets/icon.png and sce_sys/icon0.png from operator art")
+        return
+
     size = 1024
     canvas = Image.new("RGB", (size, size), "#050A10")
     pixels = np.zeros((size, size, 3), dtype=np.float32)
